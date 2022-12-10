@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -30,20 +31,32 @@ namespace API.Controllers
             {
             return await _context.Products.FindAsync(id);
             }
-
+        /*
         [HttpGet("ProductType/{producttype}")]
-        public async Task<ActionResult<string>> GetProduct(string producttype)
+        public async Task<ActionResult<List<Product>>>GetProduct(char producttype)
             {
-            //return await _context.Products.FindAsync(id);
-            switch (producttype)
-                {
-                case "individual":
-                    return "iiiiiiiiii";
-                case "commercial":
-                    return "ccccccccccccc";
-                }
-            return "0";
+            List<Product> ProductList = await _context.Products.ToListAsync();
+            IEnumerable<Product> ProductList1 = (IEnumerable<Product>)ProductList.Where(o => o.Commercial == producttype).Cast<Product>();
+            List<Product> asList = ProductList1.ToList();
+            return asList;
             }
+        */
+        [HttpGet("ProductType/{producttype}")]
+        public async Task<ActionResult<List<Product>>> GetProduct(char producttype)
+            {
+            List<Product> ProductList = await _context.Products.ToListAsync();
+
+            List<Product> FilteredProductList = new List<Product>();
+            foreach (var product in ProductList)
+                {
+                if (product.Commercial == producttype)
+                    {
+                    FilteredProductList.Add(product);
+                    }
+                }
+            return FilteredProductList;
+            }
+
 
         }
     }
